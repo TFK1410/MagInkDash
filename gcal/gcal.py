@@ -33,6 +33,7 @@ class GcalModule:
 
     def get_events(self, currDate, calendars, calStartDatetime, calEndDatetime, displayTZ, numDays):
         eventList = self.calHelper.retrieve_events(calendars, calStartDatetime, calEndDatetime, displayTZ)
+        # self.calHelper.list_calendars()
 
         # check if event stretches across multiple days
         calList = []
@@ -52,3 +53,18 @@ class GcalModule:
                 calList[idx].append(event)
 
         return calList
+    
+    def get_tasks(self, currDate, tasklists, calStartDatetime, calEndDatetime, displayTZ, numDays):
+        taskList = self.calHelper.retrieve_tasks(tasklists, calStartDatetime, calEndDatetime, displayTZ)
+        # self.calHelper.list_tasks()
+
+        # check if event stretches across multiple days
+        tskList = []
+        for i in range(numDays):
+            tskList.append([])
+        for task in taskList:
+            idx = self.get_day_in_cal(currDate, task['date'].date())
+            if idx >= 0:
+                tskList[idx].append(task)
+
+        return tskList

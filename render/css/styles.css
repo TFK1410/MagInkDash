@@ -42,7 +42,7 @@ h1, h2, p, span, .h1, .h2, .p, .span  {
     text-overflow: ellipsis;
 }
 
-.did-you-know {
+.memo {
     font-family: "Lexend-Light", sans-serif;
     font-size: 2.5rem;
     max-width: 95%;
