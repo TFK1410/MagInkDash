@@ -1,5 +1,6 @@
 ###
 # This is the module which we use to get the note from memos to add to the display
+# https://github.com/orgs/usememos/discussions/1024
 ###
 
 import logging
