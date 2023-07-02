@@ -16,6 +16,8 @@ from gcal.gcal import GcalModule
 from owm.owm import OWMModule
 from render.render import RenderHelper
 from memos.memos import Memos
+import time
+import schedule
 
 
 if __name__ == '__main__':
@@ -48,30 +50,45 @@ if __name__ == '__main__':
     logger.setLevel(logging.INFO)
     logger.info("Starting dashboard update")
 
-    # Retrieve Weather Data
-    owmModule = OWMModule()
-    current_weather, hourly_forecast, daily_forecast = owmModule.get_weather(lat, lon, owm_api_key)
+    def job_run():
+        # Retrieve Weather Data
+        owmModule = OWMModule()
+        current_weather, hourly_forecast, daily_forecast = owmModule.get_weather(lat, lon, owm_api_key)
 
-    # Retrieve Calendar Data
-    currDate = dt.now(displayTZ).date()
-    calStartDatetime = displayTZ.localize(dt.combine(currDate, dt.min.time()))
-    calEndDatetime = displayTZ.localize(dt.combine(currDate + datetime.timedelta(days=numCalDaysToShow-1), dt.max.time()))
-    calModule = GcalModule()
-    eventList = calModule.get_events(
-        currDate, calendars, calStartDatetime, calEndDatetime, displayTZ, numCalDaysToShow)
+        # Retrieve Calendar Data
+        currDate = dt.now(displayTZ).date()
+        calStartDatetime = displayTZ.localize(dt.combine(currDate, dt.min.time()))
+        calEndDatetime = displayTZ.localize(dt.combine(currDate + datetime.timedelta(days=numCalDaysToShow-1), dt.max.time()))
+        calModule = GcalModule()
+        eventList = calModule.get_events(
+            currDate, calendars, calStartDatetime, calEndDatetime, displayTZ, numCalDaysToShow)
+        
+        # Retrieve Timed Tasks
+        taskList = calModule.get_tasks(
+            currDate, tasklists, calStartDatetime, calEndDatetime, displayTZ, numCalDaysToShow)
+        
+        # Retrieve Memo
+        memoModule = Memos()
+        currMemo = memoModule.get_memo(memos['domain'], memos['openId'], memos['tag'])
+
+        # Render Dashboard Image
+        renderService = RenderHelper(imageWidth, imageHeight, rotateAngle)
+        renderService.process_inputs(currDate, current_weather, hourly_forecast, daily_forecast, eventList, taskList, numCalDaysToShow, currMemo, path_to_server_image)
+
+        logger.info("Completed dashboard update")
+        
+    job_run()
     
-    # Retrieve Timed Tasks
-    taskList = calModule.get_tasks(
-        currDate, tasklists, calStartDatetime, calEndDatetime, displayTZ, numCalDaysToShow)
-    
-    # Retrieve Memo
-    memoModule = Memos()
-    currMemo = memoModule.get_memo(memos['domain'], memos['openId'], memos['tag'])
+    schedule.every().hour.do(job_run)
 
-    # Render Dashboard Image
-    renderService = RenderHelper(imageWidth, imageHeight, rotateAngle)
-    renderService.process_inputs(currDate, current_weather, hourly_forecast, daily_forecast, eventList, taskList, numCalDaysToShow, currMemo, path_to_server_image)
-
-    logger.info("Completed dashboard update")
+    while 1:
+        n = schedule.idle_seconds()
+        if n is None:
+            # no more jobs
+            break
+        elif n > 0:
+            # sleep exactly the right amount of time
+            time.sleep(n)
+        schedule.run_pending()
 
 
