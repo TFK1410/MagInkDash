@@ -51,6 +51,8 @@ class RenderHelper:
         opts.add_argument("--headless")
         opts.add_argument("--hide-scrollbars");
         opts.add_argument('--force-device-scale-factor=1')
+        opts.add_argument("--no-sandbox");
+        opts.add_argument("--disable-dev-shm-usage");
         driver = webdriver.Chrome(options=opts)
         self.set_viewport_size(driver)
         driver.get(self.htmlFile)

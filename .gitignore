@@ -134,3 +134,4 @@ render/dashboard.png
 gcal/credentials.json
 gcal/token.pickle
 config.json
+gcal/token/token.pickle
