@@ -7,8 +7,7 @@
     2. Retrieve an image from a web address
     3. Display the image on the Inkplate 10 device
     4. (Optional) Check the battery level on the Inkplate device
-    5. (Optional) Send a message via Telegram if battery level is low
-    6. Set a sleep timer for 60 minutes, and allow the Inkplate to go into deep sleep to conserve battery
+    5. Set a sleep timer for 60 minutes, and allow the Inkplate to go into deep sleep to conserve battery
 */
 
 // Next 3 lines are a precaution, you can ignore those, and the example would also work without them
@@ -19,53 +18,60 @@
 #include "Inkplate.h"
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
-#include <UniversalTelegramBot.h>
 #include <ArduinoJson.h>
+#include "battSymbol.h" // Include .h file that contains byte array for battery symbol.
 
 Inkplate display(INKPLATE_3BIT);
 
-const char ssid[] = "YOUR WIFI SSID";    // Your WiFi SSID
-const char *password = "YOUR WIFI PASSWORD"; // Your WiFi password
-const char *imgurl = "http://url.to.your.server/maginkdash.png"; // Your dashboard image web address
-
-// Initialize Telegram BOT
-#define BOTtoken "YOUR TELEGRAM BOT TOKEN"  // your Bot Token (Get from Botfather)
-
-// Use @myidbot to find out the chat ID of an individual or a group
-// Also note that you need to click "start" on a bot before it can
-// message you
-#define CHAT_ID "YOUR TELEGRAM CHAT ID TO SEND MESSAGES TO"
+const char ssid[] = "";    // Your WiFi SSID
+const char *password = ""; // Your WiFi password
+const char *imgurl = ""; // Your dashboard image web address
 
 // Battery values
-#define BATTV_MAX    4.1     // maximum voltage of battery
-#define BATTV_MIN    3.2     // what we regard as an empty battery
-#define BATTV_LOW    3.4     // voltage considered to be low battery
+#define BATTV_5 4.1
+#define BATTV_4 4.0
+#define BATTV_3 3.8
+#define BATTV_2 3.6
+#define BATTV_1 3.4
+#define BATTV_0 3.2
 
 WiFiClientSecure client;
-UniversalTelegramBot bot(BOTtoken, client);
 
 void setup()
 {
     Serial.begin(115200);
     display.begin();
+    
+    // Connect to the WiFi network.
+    WiFi.mode(WIFI_MODE_STA);
+    WiFi.begin(ssid, password);
+    while (WiFi.status() != WL_CONNECTED)
+    {
+        delay(500);
+    }
 
     // Join wifi, retrieve image, update display
-    display.joinAP(ssid, password);
     char url[256];
     strcpy(url, imgurl);
     Serial.println(display.drawImage(url, display.PNG, 0, 0));
+
+    float voltage = display.readBattery();                   // Read battery voltage
+    if (voltage >= BATTV_5) {
+      display.drawImage(bat_5, 0, 0, bat_5_w, bat_5_h); // Draw battery symbol
+    } else if (voltage >= BATTV_4) {
+      display.drawImage(bat_4, 0, 0, bat_4_w, bat_4_h); // Draw battery symbol
+    } else if (voltage >= BATTV_3) {
+      display.drawImage(bat_3, 0, 0, bat_3_w, bat_3_h); // Draw battery symbol
+    } else if (voltage >= BATTV_2) {
+      display.drawImage(bat_2, 0, 0, bat_2_w, bat_2_h); // Draw battery symbol
+    } else if (voltage >= BATTV_1) {
+      display.drawImage(bat_1, 0, 0, bat_1_w, bat_1_h); // Draw battery symbol
+    } else {
+      display.drawImage(bat_0, 0, 0, bat_0_w, bat_0_h); // Draw battery symbol
+    }
+    
     display.display();
     
-    //uncomment or delete the following section if not using Telegram to send message when battery is low 
-    double battvoltage = display.readBattery();
-    int battpc = calc_battery_percentage(battvoltage);
-    if (battvoltage < BATTV_LOW) {
-      char msg [100];
-      sprintf (msg, "Inkplate battery at %d%%, voltage at %.2fV", battpc, battvoltage); 
-      client.setCACert(TELEGRAM_CERTIFICATE_ROOT);
-      bot.sendMessage(CHAT_ID, msg, "");
-    }
-
     // Let display go to sleep to conserve battery, and wake up an hour later    
     Serial.println("Going to sleep");
     delay(100);
@@ -76,17 +82,4 @@ void setup()
 void loop()
 {
     // Never here, as deepsleep restarts esp32
-}
-
-
-int calc_battery_percentage(double battv)
-{    
-    int battery_percentage = (uint8_t)(((battv - BATTV_MIN) / (BATTV_MAX - BATTV_MIN)) * 100);
-
-    if (battery_percentage < 0)
-        battery_percentage = 0;
-    if (battery_percentage > 100)
-        battery_percentage = 100;
-
-    return battery_percentage;
 }
