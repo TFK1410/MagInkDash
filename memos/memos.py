@@ -37,5 +37,9 @@ class Memos:
 
         if len(data) == 0:
             return None
-        else:
-            return data[0]['content']
+
+        text = data[0]['content']
+        text = text.replace("#" + tag, "")
+        text = text.strip()
+
+        return text
