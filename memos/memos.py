@@ -14,7 +14,7 @@ class Memos:
         self.logger.info('Retrieving Memos memo from the domain {0} and tag {1}'.format(domain, tag))
         
         try:
-            r = requests.get('https://' + domain + '/api/memo',
+            r = requests.get('https://' + domain + '/api/v1/memo',
                              params={'openId': openId,
                                      'tag': tag},
                              timeout=10)
@@ -33,7 +33,7 @@ class Memos:
             return None
             
         json_response = r.json()
-        data = json_response['data']
+        data = json_response
 
         if len(data) == 0:
             return None

@@ -91,7 +91,7 @@ class RenderHelper:
             cal_events_text = ""
             
             if len(task_list[i]) > 0:
-                cal_events_text += '<div class="event"><span class="event-time">Tasks </span>'
+                cal_events_text += '<div class="event"><span class="event-time">Tasks: </span>'
                 for task in task_list[i]:
                     cal_events_text += task['title'] + ', '
                 cal_events_text = cal_events_text[:-2]
