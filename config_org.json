@@ -3,7 +3,7 @@
   "calendars": ["primary"],
   "tasklists": [""],
   "numCalDaysToShow": 4,
-  "memos": {"domain": "", "openId": "", "tag": ""},
+  "memos": {"domain": "", "accessToken": "", "tag": ""},
   "owm_api_key": "",
   "lat": 42.134673,
   "lon": 65.876542,

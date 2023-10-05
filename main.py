@@ -31,7 +31,7 @@ if __name__ == '__main__':
     tasklists = config['tasklists'] # Google Task List IDs
     memos = dict()
     memos['domain'] = config['memos']['domain'] # Memos Domain
-    memos['openId'] = config['memos']['openId'] # Memos openId
+    memos['accessToken'] = config['memos']['accessToken'] # Memos accessToken
     memos['tag'] = config['memos']['tag'] # Memos tag
     displayTZ = timezone(config['displayTZ']) # list of timezones - print(pytz.all_timezones)
     numCalDaysToShow = config['numCalDaysToShow'] # Number of days to retrieve from gcal, keep to 3 unless other parts of the code are changed too
@@ -69,7 +69,7 @@ if __name__ == '__main__':
         
         # Retrieve Memo
         memoModule = Memos()
-        currMemo = memoModule.get_memo(memos['domain'], memos['openId'], memos['tag'])
+        currMemo = memoModule.get_memo(memos['domain'], memos['accessToken'], memos['tag'])
 
         # Render Dashboard Image
         renderService = RenderHelper(imageWidth, imageHeight, rotateAngle)

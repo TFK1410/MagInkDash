@@ -10,13 +10,14 @@ class Memos:
     def __init__(self):
         self.logger = logging.getLogger('maginkdash')
 
-    def get_memo(self, domain, openId, tag):
+    def get_memo(self, domain, accessToken, tag):
         self.logger.info('Retrieving Memos memo from the domain {0} and tag {1}'.format(domain, tag))
         
         try:
             r = requests.get('https://' + domain + '/api/v1/memo',
-                             params={'openId': openId,
-                                     'tag': tag},
+                             params={'tag': tag},
+                             headers={'Accept': 'application/json',
+                                      'Authorization': 'Bearer ' + accessToken},
                              timeout=10)
             r.raise_for_status()
         except requests.exceptions.HTTPError as errh:
