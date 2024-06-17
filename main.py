@@ -67,13 +67,13 @@ if __name__ == '__main__':
         taskList = calModule.get_tasks(
             currDate, tasklists, calStartDatetime, calEndDatetime, displayTZ, numCalDaysToShow)
         
-        # Retrieve Memo
+        # Retrieve Memos
         memoModule = Memos()
-        currMemo = memoModule.get_memo(memos['domain'], memos['accessToken'], memos['tag'])
+        currNote = memoModule.get_memo(memos['domain'], memos['accessToken'], memos['tag'])
 
         # Render Dashboard Image
         renderService = RenderHelper(imageWidth, imageHeight, rotateAngle)
-        renderService.process_inputs(currDate, current_weather, hourly_forecast, daily_forecast, eventList, taskList, numCalDaysToShow, currMemo, path_to_server_image)
+        renderService.process_inputs(currDate, current_weather, hourly_forecast, daily_forecast, eventList, taskList, numCalDaysToShow, currNote, path_to_server_image)
 
         logger.info("Completed dashboard update")
         
