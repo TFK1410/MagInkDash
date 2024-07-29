@@ -23,9 +23,9 @@
 
 Inkplate display(INKPLATE_3BIT);
 
-const char ssid[] = "";    // Your WiFi SSID
-const char *password = ""; // Your WiFi password
-const char *imgurl = ""; // Your dashboard image web address
+const char ssid[] = "Orange_Swiatlowod_6310";    // Your WiFi SSID
+const char *password = "4LMW535RWY9E"; // Your WiFi password
+const char *imgurl = "http://192.168.1.100:30010/maginkdash/maginkdash.png"; // Your dashboard image web address
 
 // Battery values
 #define BATTV_5 4.1
@@ -56,19 +56,22 @@ void setup()
     Serial.println(display.drawImage(url, display.PNG, 0, 0));
 
     float voltage = display.readBattery();                   // Read battery voltage
-    if (voltage >= BATTV_5) {
-      display.drawImage(bat_5, 0, 0, bat_5_w, bat_5_h); // Draw battery symbol
-    } else if (voltage >= BATTV_4) {
-      display.drawImage(bat_4, 0, 0, bat_4_w, bat_4_h); // Draw battery symbol
-    } else if (voltage >= BATTV_3) {
-      display.drawImage(bat_3, 0, 0, bat_3_w, bat_3_h); // Draw battery symbol
-    } else if (voltage >= BATTV_2) {
-      display.drawImage(bat_2, 0, 0, bat_2_w, bat_2_h); // Draw battery symbol
-    } else if (voltage >= BATTV_1) {
-      display.drawImage(bat_1, 0, 0, bat_1_w, bat_1_h); // Draw battery symbol
-    } else {
-      display.drawImage(bat_0, 0, 0, bat_0_w, bat_0_h); // Draw battery symbol
-    }
+    display.setTextColor(BLACK);
+    display.setTextSize(3); 
+    display.print(voltage);
+    // if (voltage >= BATTV_5) {
+    //   display.drawImage(bat_5, 0, 0, bat_5_w, bat_5_h); // Draw battery symbol
+    // } else if (voltage >= BATTV_4) {
+    //   display.drawImage(bat_4, 0, 0, bat_4_w, bat_4_h); // Draw battery symbol
+    // } else if (voltage >= BATTV_3) {
+    //   display.drawImage(bat_3, 0, 0, bat_3_w, bat_3_h); // Draw battery symbol
+    // } else if (voltage >= BATTV_2) {
+    //   display.drawImage(bat_2, 0, 0, bat_2_w, bat_2_h); // Draw battery symbol
+    // } else if (voltage >= BATTV_1) {
+    //   display.drawImage(bat_1, 0, 0, bat_1_w, bat_1_h); // Draw battery symbol
+    // } else {
+    //   display.drawImage(bat_0, 0, 0, bat_0_w, bat_0_h); // Draw battery symbol
+    // }
     
     display.display();
     
