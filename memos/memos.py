@@ -14,8 +14,8 @@ class Memos:
         self.logger.info('Retrieving Memos memo from the domain {0} and tag {1}'.format(domain, tag))
         
         try:
-            r = requests.get('https://' + domain + '/api/v1/memo',
-                             params={'tag': tag},
+            r = requests.get('https://' + domain + '/api/v1/memos',
+                             params={'filter': "tag == \"" + tag + "\""},
                              headers={'Accept': 'application/json',
                                       'Authorization': 'Bearer ' + accessToken},
                              timeout=10)
@@ -39,7 +39,7 @@ class Memos:
         if len(data) == 0:
             return None
 
-        text = data[0]['content']
+        text = data['memos'][0]['content']
         text = text.replace("#" + tag, "")
         text = text.strip()
 
