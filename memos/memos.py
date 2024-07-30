@@ -15,7 +15,7 @@ class Memos:
         
         try:
             r = requests.get('https://' + domain + '/api/v1/memos',
-                             params={'filter': "tag == \"" + tag + "\""},
+                             params={'filter': "tag_search == [\"" + tag + "\"]"},
                              headers={'Accept': 'application/json',
                                       'Authorization': 'Bearer ' + accessToken},
                              timeout=10)
