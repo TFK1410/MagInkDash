@@ -19,6 +19,16 @@ from memos.memos import Memos
 import time
 import schedule
 
+# Monkey patch to force IPv4, since FB seems to hang on IPv6
+import socket
+old_getaddrinfo = socket.getaddrinfo
+def new_getaddrinfo(*args, **kwargs):
+    responses = old_getaddrinfo(*args, **kwargs)
+    return [response
+        for response in responses
+        if response[0] == socket.AF_INET]
+socket.getaddrinfo = new_getaddrinfo
+
 
 if __name__ == '__main__':
     logger = logging.getLogger('maginkdash')
