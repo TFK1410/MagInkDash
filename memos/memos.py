@@ -14,7 +14,7 @@ class Memos:
         self.logger.info('Retrieving Memos memo from the domain {0} and tag {1}'.format(domain, tag))
         
         try:
-            r = requests.get('https://' + domain + '/api/v1/memos',
+            r = requests.get(domain + '/api/v1/memos',
                              params={'filter': "tag_search == [\"" + tag + "\"]"},
                              headers={'Accept': 'application/json',
                                       'Authorization': 'Bearer ' + accessToken},
