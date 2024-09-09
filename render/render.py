@@ -7,58 +7,59 @@ format the calendar exactly the way I want it using HTML/CSS, and (ii) I can del
 calendar and refreshing of the eInk display.
 """
 
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from time import sleep
 from datetime import timedelta
 import pathlib
 import string
-from PIL import Image
 import logging
-from selenium.webdriver.common.by import By
+import shutil
+import requests
+import json
 
 
 class RenderHelper:
 
-    def __init__(self, width, height, angle):
+    def __init__(self, width, height, nginx_server_dir, nginx_servering_path, browserless_url, browserless_token):
         self.logger = logging.getLogger('maginkdash')
         self.currPath = str(pathlib.Path(__file__).parent.absolute())
-        self.htmlFile = 'file://' + self.currPath + '/dashboard.html'
         self.imageWidth = width
         self.imageHeight = height
-        self.rotateAngle = angle
-
-    def set_viewport_size(self, driver):
-
-        # Extract the current window size from the driver
-        current_window_size = driver.get_window_size()
-
-        # Extract the client window size from the html tag
-        html = driver.find_element(By.TAG_NAME,'html')
-        inner_width = int(html.get_attribute("clientWidth"))
-        inner_height = int(html.get_attribute("clientHeight"))
-
-        # "Internal width you want to set+Set "outer frame width" to window size
-        target_width = self.imageWidth + (current_window_size["width"] - inner_width)
-        target_height = self.imageHeight + (current_window_size["height"] - inner_height)
-
-        driver.set_window_rect(
-            width=target_width,
-            height=target_height)
+        self.nginx_server_dir = nginx_server_dir
+        self.nginx_servering_path = nginx_servering_path
+        self.htmlFile = self.nginx_server_dir + 'dashboard.html'
+        self.browserless_url = browserless_url
+        self.browserless_token = browserless_token
+        
+        self._init_css_and_font()
+    
+    def _init_css_and_font(self):
+        shutil.copytree(src=self.currPath + "/css", dst=self.nginx_server_dir, dirs_exist_ok=True)
+        shutil.copytree(src=self.currPath + "/font", dst=self.nginx_server_dir, dirs_exist_ok=True)
+        shutil.copy2(src=self.currPath + "/background.jpg", dst=self.nginx_server_dir)
 
     def get_screenshot(self, path_to_server_image):
-        opts = Options()
-        opts.add_argument("--headless")
-        opts.add_argument("--hide-scrollbars");
-        opts.add_argument('--force-device-scale-factor=1')
-        opts.add_argument("--no-sandbox");
-        opts.add_argument("--disable-dev-shm-usage");
-        driver = webdriver.Chrome(options=opts)
-        self.set_viewport_size(driver)
-        driver.get(self.htmlFile)
-        sleep(1)
-        driver.get_screenshot_as_file(self.currPath + '/dashboard.png')
-        driver.get_screenshot_as_file(path_to_server_image)
+        url = self.browserless_url + "/screenshot"
+        params = {'token': self.browserless_token}
+        headers = {'Cache-Control': 'no-cache', 'Content-type': 'application/json',
+                   'Accept': 'image/png'}
+        data = {
+            'url': self.nginx_servering_path + "dashboard.html",
+            'options': {
+                'type': 'png'
+            },
+            'viewport': {
+                'width': self.imageWidth,
+                'height': self.imageHeight
+            }
+        }
+        r = requests.post(url, data=json.dumps(data), headers=headers, params=params, stream=True)
+        
+        if r.status_code == 200:
+            with open(self.currPath + '/dashboard.png', 'wb') as f:
+                for chunk in r.iter_content(chunk_size=1024): 
+                    if chunk: # filter out keep-alive new chunks
+                        f.write(chunk)
+
         self.logger.info('Screenshot captured and saved to file.')
 
     def get_short_time(self, datetimeObj, is24hour=False):

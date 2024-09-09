@@ -9,6 +9,7 @@
   "lon": 65.876542,
   "imageWidth": 1200,
   "imageHeight": 825,
-  "rotateAngle": 0,
-  "path_to_server_image": "/var/www/html/maginkdash.png"
+  "path_to_server_image": "/var/www/html/maginkdash.png",
+  "nginx": {"server_dir": "/var/www/html/", "serving_path": ""},
+  "browserless": {"url": "http://mid-chromium:3000", "token": ""}
 }

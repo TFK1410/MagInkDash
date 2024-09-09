@@ -36,17 +36,25 @@ if __name__ == '__main__':
     numCalDaysToShow = config['numCalDaysToShow'] # Number of days to retrieve from gcal, keep to 3 unless other parts of the code are changed too
     imageWidth = config['imageWidth']  # Width of image to be generated for display.
     imageHeight = config['imageHeight']  # Height of image to be generated for display.
-    rotateAngle = config['rotateAngle']  # If image is rendered in portrait orientation, angle to rotate to fit screen
     lat = config["lat"] # Latitude in decimal of the location to retrieve weather forecast for
     lon = config["lon"] # Longitude in decimal of the location to retrieve weather forecast for
     owm_api_key = config["owm_api_key"]  # OpenWeatherMap API key. Required to retrieve weather forecast.
     path_to_server_image = config["path_to_server_image"]  # Location to save the generated image
+    nginx_server_dir = config['nginx']['server_dir']  # Path to the Nginx main folder for the html files to be transferred to
+    nginx_servering_path = config['nginx']['serving_path']  # URL of the nginx for the browserless to use to render the html
+    browserless_url = config['browserless']['url']  # Browserless url
+    browserless_token = config['browserless']["token"]  # Browserless token
 
     # Create and configure logger
     logging.basicConfig(filename="logfile.log", format='%(asctime)s %(levelname)s - %(message)s', filemode='a')
     logger = logging.getLogger('maginkdash')
     logger.addHandler(logging.StreamHandler(sys.stdout))  # print logger to stdout
     logger.setLevel(logging.INFO)
+    
+    logger.info("Copying css and fonts to the nginx server directory")
+    renderService = RenderHelper(imageWidth, imageHeight, nginx_server_dir=nginx_server_dir, nginx_servering_path=nginx_servering_path, 
+                                 browserless_url=browserless_url, browserless_token=browserless_token)
+    
     logger.info("Starting dashboard update")
 
     def job_run():
@@ -71,7 +79,6 @@ if __name__ == '__main__':
         currNote = memoModule.get_memo(memos['domain'], memos['accessToken'], memos['tag'])
 
         # Render Dashboard Image
-        renderService = RenderHelper(imageWidth, imageHeight, rotateAngle)
         renderService.process_inputs(currDate, current_weather, hourly_forecast, daily_forecast, eventList, taskList, numCalDaysToShow, currNote, path_to_server_image)
 
         logger.info("Completed dashboard update")
