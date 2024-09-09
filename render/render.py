@@ -19,13 +19,13 @@ import json
 
 class RenderHelper:
 
-    def __init__(self, width, height, nginx_server_dir, nginx_servering_path, browserless_url, browserless_token):
+    def __init__(self, width, height, nginx_server_dir, nginx_serving_path, browserless_url, browserless_token):
         self.logger = logging.getLogger('maginkdash')
         self.currPath = str(pathlib.Path(__file__).parent.absolute())
         self.imageWidth = width
         self.imageHeight = height
         self.nginx_server_dir = nginx_server_dir
-        self.nginx_servering_path = nginx_servering_path
+        self.nginx_serving_path = nginx_serving_path
         self.htmlFile = self.nginx_server_dir + 'dashboard.html'
         self.browserless_url = browserless_url
         self.browserless_token = browserless_token
@@ -33,8 +33,8 @@ class RenderHelper:
         self._init_css_and_font()
     
     def _init_css_and_font(self):
-        shutil.copytree(src=self.currPath + "/css", dst=self.nginx_server_dir, dirs_exist_ok=True)
-        shutil.copytree(src=self.currPath + "/font", dst=self.nginx_server_dir, dirs_exist_ok=True)
+        shutil.copytree(src=self.currPath + "/css", dst=self.nginx_server_dir + "/css", dirs_exist_ok=True)
+        shutil.copytree(src=self.currPath + "/font", dst=self.nginx_server_dir + "/font", dirs_exist_ok=True)
         shutil.copy2(src=self.currPath + "/background.jpg", dst=self.nginx_server_dir)
 
     def get_screenshot(self, path_to_server_image):
@@ -43,7 +43,7 @@ class RenderHelper:
         headers = {'Cache-Control': 'no-cache', 'Content-type': 'application/json',
                    'Accept': 'image/png'}
         data = {
-            'url': self.nginx_servering_path + "dashboard.html",
+            'url': self.nginx_serving_path + "dashboard.html",
             'options': {
                 'type': 'png'
             },
@@ -112,7 +112,7 @@ class RenderHelper:
             cal_events_list.append(cal_events_text)
 
         # Append the bottom and write the file
-        htmlFile = open(self.currPath + '/dashboard.html', "w")
+        htmlFile = open(self.nginx_server_dir + '/dashboard.html', "w")
         htmlFile.write(dashboard_template.format(
             day=current_date.strftime("%-d"),
             month=current_date.strftime("%B"),

@@ -41,7 +41,7 @@ if __name__ == '__main__':
     owm_api_key = config["owm_api_key"]  # OpenWeatherMap API key. Required to retrieve weather forecast.
     path_to_server_image = config["path_to_server_image"]  # Location to save the generated image
     nginx_server_dir = config['nginx']['server_dir']  # Path to the Nginx main folder for the html files to be transferred to
-    nginx_servering_path = config['nginx']['serving_path']  # URL of the nginx for the browserless to use to render the html
+    nginx_serving_path = config['nginx']['serving_path']  # URL of the nginx for the browserless to use to render the html
     browserless_url = config['browserless']['url']  # Browserless url
     browserless_token = config['browserless']["token"]  # Browserless token
 
@@ -52,7 +52,7 @@ if __name__ == '__main__':
     logger.setLevel(logging.INFO)
     
     logger.info("Copying css and fonts to the nginx server directory")
-    renderService = RenderHelper(imageWidth, imageHeight, nginx_server_dir=nginx_server_dir, nginx_servering_path=nginx_servering_path, 
+    renderService = RenderHelper(imageWidth, imageHeight, nginx_server_dir=nginx_server_dir, nginx_serving_path=nginx_serving_path, 
                                  browserless_url=browserless_url, browserless_token=browserless_token)
     
     logger.info("Starting dashboard update")
