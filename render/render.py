@@ -55,7 +55,7 @@ class RenderHelper:
         r = requests.post(url, data=json.dumps(data), headers=headers, params=params, stream=True)
         
         if r.status_code == 200:
-            with open(self.currPath + '/dashboard.png', 'wb') as f:
+            with open(path_to_server_image, 'wb') as f:
                 for chunk in r.iter_content(chunk_size=1024): 
                     if chunk: # filter out keep-alive new chunks
                         f.write(chunk)
