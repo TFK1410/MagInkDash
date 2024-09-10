@@ -50,7 +50,8 @@ class RenderHelper:
             'viewport': {
                 'width': self.imageWidth,
                 'height': self.imageHeight
-            }
+            },
+            'waitForTimeout': 1
         }
         r = requests.post(url, data=json.dumps(data), headers=headers, params=params, stream=True)
         
