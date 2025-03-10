@@ -4,6 +4,7 @@
   "tasklists": [""],
   "numCalDaysToShow": 4,
   "memos": {"domain": "", "accessToken": "", "tag": ""},
+  "dumbdo": {"domain": "", "listName": ""},
   "owm_api_key": "",
   "lat": 42.134673,
   "lon": 65.876542,

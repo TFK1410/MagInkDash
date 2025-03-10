@@ -51,7 +51,7 @@ class RenderHelper:
                 'width': self.imageWidth,
                 'height': self.imageHeight
             },
-            'waitForTimeout': 10
+            'waitForTimeout': 30
         }
         r = requests.post(url, data=json.dumps(data), headers=headers, params=params, stream=True)
         
@@ -81,7 +81,7 @@ class RenderHelper:
                 datetime_str = '{}{}am'.format(str(datetimeObj.hour), datetime_str)
         return datetime_str
 
-    def process_inputs(self, current_date, current_weather, hourly_forecast, daily_forecast, event_list, task_list, num_cal_days, memos_text, path_to_server_image):
+    def process_inputs(self, current_date, current_weather, hourly_forecast, daily_forecast, event_list, task_list, num_cal_days, todos_text, path_to_server_image):
 
         # Read html template
         with open(self.currPath + '/dashboard_template.html', 'r') as file:
@@ -146,7 +146,7 @@ class RenderHelper:
             today_weather_max=str(round(daily_forecast[0]["temp"]["max"])),
             tomorrow_weather_max=str(round(daily_forecast[1]["temp"]["max"])),
             dayafter_weather_max=str(round(daily_forecast[2]["temp"]["max"])),
-            memo_text=memos_text
+            memo_text=todos_text
         ))
         htmlFile.close()
 

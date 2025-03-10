@@ -16,6 +16,7 @@ from gcal.gcal import GcalModule
 from owm.owm import OWMModule
 from render.render import RenderHelper
 from memos.memos import Memos
+from dumbdo.dumbdo import Dumbdo
 import time
 import schedule
 
@@ -28,10 +29,22 @@ if __name__ == '__main__':
 
     calendars = config['calendars'] # Google Calendar IDs
     tasklists = config['tasklists'] # Google Task List IDs
-    memos = dict()
-    memos['domain'] = config['memos']['domain'] # Memos Domain
-    memos['accessToken'] = config['memos']['accessToken'] # Memos accessToken
-    memos['tag'] = config['memos']['tag'] # Memos tag
+    
+    memos_config = False
+    if 'memos' in config:
+        memos = dict()
+        memos['domain'] = config['memos']['domain'] # Memos Domain
+        memos['accessToken'] = config['memos']['accessToken'] # Memos accessToken
+        memos['tag'] = config['memos']['tag'] # Memos tag
+        memos_config = True
+    elif 'dumbdo' in config:
+        dumbdo = dict()
+        dumbdo['domain'] = config['dumbdo']['domain'] # DumbDo Domain
+        dumbdo['listName'] = config['dumbdo']['listName'] # DumbDo listName
+    else:
+        logger.error('Either memos or dumbdo has to be provided in the config. Memos will take precedence')
+        exit(1)
+    
     displayTZ = timezone(config['displayTZ']) # list of timezones - print(pytz.all_timezones)
     numCalDaysToShow = config['numCalDaysToShow'] # Number of days to retrieve from gcal, keep to 3 unless other parts of the code are changed too
     imageWidth = config['imageWidth']  # Width of image to be generated for display.
@@ -74,9 +87,14 @@ if __name__ == '__main__':
         taskList = calModule.get_tasks(
             currDate, tasklists, calStartDatetime, calEndDatetime, displayTZ, numCalDaysToShow)
         
-        # Retrieve Memos
-        memoModule = Memos()
-        currNote = memoModule.get_memo(memos['domain'], memos['accessToken'], memos['tag'])
+        if memos_config:
+            # Retrieve Memos
+            memoModule = Memos()
+            currNote = memoModule.get_memo(memos['domain'], memos['accessToken'], memos['tag'])
+        else:
+            # Retrieve DumbDo
+            dd = Dumbdo()
+            currNote = dd.get_list(dumbdo['domain'], dumbdo['listName'])
 
         # Render Dashboard Image
         renderService.process_inputs(currDate, current_weather, hourly_forecast, daily_forecast, eventList, taskList, numCalDaysToShow, currNote, path_to_server_image)
